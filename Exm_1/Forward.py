@@ -236,8 +236,6 @@ class Model:
         error = np.linalg.norm(pred - exact, 2) / np.linalg.norm(exact, 2)
         print(Fore.BLUE + 'Test_L2error:' , '{0:.4e}'.format(error)+ Style.RESET_ALL)
 
-        print('Training time: %.2f' % elapsed)
-
         return error, elapsed, self.LBGFS_loss().item()
     
 if __name__ == '__main__':
