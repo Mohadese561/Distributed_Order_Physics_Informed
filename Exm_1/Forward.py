@@ -1,5 +1,5 @@
-~~~
-@Mohadese Ramezani
-~~~
+"""
+@author: Mohadese Ramezani
+"""
 
 import pytorch
