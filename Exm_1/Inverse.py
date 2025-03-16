@@ -1,5 +1,5 @@
 """
-@author: Mohadese Ramezani
+@authors: Mohadese Ramezani & Maryam Mohammadi
 """
 
 
