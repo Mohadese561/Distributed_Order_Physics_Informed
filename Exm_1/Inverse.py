@@ -250,7 +250,7 @@ class Model:
         error = np.linalg.norm(pred - exact, 2) / np.linalg.norm(exact, 2)
         print(Fore.BLUE + 'Test_L2error:' , '{0:.4e}'.format(error)+ Style.RESET_ALL)
         
-        return error, elapsed, self.LBGFS_loss().item()
+        return error, self.LBGFS_loss().item()
     
 if __name__ == '__main__':
     set_seed(1234)
@@ -264,7 +264,7 @@ if __name__ == '__main__':
     torch.nn.DataParallel(net)
 
     # Distributed-order parameters
-    beta = 1/2
+    beta = 0.1
     ha = 1/100
 
 
@@ -272,7 +272,7 @@ if __name__ == '__main__':
     ub = np.array([1.0, 1.0]) # up boundary
 
     '''train data'''
-    num_t = 80
+    num_t = 10
     num_x = 50
     dt = ((ub[0] - lb[0]) / (num_t - 1))
     t, x_data = data_train()
@@ -298,4 +298,4 @@ if __name__ == '__main__':
     )
 
 
-    model.train(LBGFS_epochs=50000)
+    model.train(LBGFS_epochs=20000)
