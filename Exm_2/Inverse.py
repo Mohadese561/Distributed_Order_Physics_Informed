@@ -90,7 +90,7 @@ def data_train(x, y):
     x_boundary, y_boundary = generate_boundary_points(num_boundary_points)
     boundary_points = np.column_stack((x_boundary, y_boundary))
     points_inside = generate_interior_points(x, y, num_interior_points)
-    
+
     return t, points_inside, boundary_points
 
 def data_test(x, y):
@@ -106,7 +106,7 @@ def data_test(x, y):
     with torch.no_grad():
         txy_test_exact = exact_u(txy_test)
 
-    return xy, txy_test, txy_test_exact
+    return txy_test, txy_test_exact
 
 
 #Neural Network
@@ -253,6 +253,9 @@ class Model:
 
 
     def LBGFS_loss(self):
+        #if self.net.iter > self.max_iterations:
+           # return torch.tensor(0.0, requires_grad=True)  # Return a dummy loss to stop LBFGS
+    
         self.optimizer_LBGFS.zero_grad()
         loss_initial, loss_boundary, loss_pde, loss_cond = self.compute_loss()
         total_loss = loss_initial + loss_boundary + loss_pde + loss_cond
@@ -300,13 +303,17 @@ class Model:
             tolerance_change=1.0 * np.finfo(float).eps,
             line_search_fn="strong_wolfe"
         )
-
         self.optimizer_LBGFS.step(self.LBGFS_loss)
-        pred = self.train_U(self.txy_test).cpu().numpy()
-        exact = self.txy_test_exact.cpu().numpy()
-        error = np.linalg.norm(pred - exact, 2) / np.linalg.norm(exact, 2)
-        print(Fore.BLUE + 'Test_L2error:', '{0:.4e}'.format(error) + Style.RESET_ALL)
-
+        with torch.no_grad():
+            pred_ = self.train_U(self.txy).cpu().numpy()
+            exact_ = exact_u(self.txy).cpu().numpy()
+            error_ = np.linalg.norm(pred_ - exact_, 2) / np.linalg.norm(exact_, 2)
+            print(Fore.GREEN + 'Tain_L2error:', '{0:.4e}'.format(error_) + Style.RESET_ALL)
+            pred = self.train_U(self.txy_test).cpu().numpy()
+            exact = self.txy_test_exact.cpu().numpy()
+            error = np.linalg.norm(pred - exact, 2) / np.linalg.norm(exact, 2)
+            print(Fore.BLUE + 'Test_L2error:', '{0:.4e}'.format(error) + Style.RESET_ALL)
+     
         return error
     
     def train(self, LBGFS_epochs):
@@ -317,7 +324,7 @@ class Model:
 if __name__ == '__main__':
     set_seed(1234)
 
-    noise = 0.0
+    noise = 0.15
 
     n_layers = 5
     n_neurons = 60
@@ -325,15 +332,13 @@ if __name__ == '__main__':
     net = Net(layers).to(device)
     torch.nn.DataParallel(net)
 
-    # Distributed-order parameters
+    # Distributed-order
     beta = 1
     ha = 1/100
     T = 1
 
     lb = np.array([0.0, -1.0, -1.0]) # low boundary
     ub = np.array([1.0, 1.0, 1.0]) # up boundary
-    
-    
     '''train data'''
     t_N = 10
     num_boundary_points = 50
