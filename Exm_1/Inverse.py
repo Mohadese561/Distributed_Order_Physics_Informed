@@ -71,7 +71,7 @@ class Net(nn.Module):
         self.iter = 0
         self.activation = nn.Tanh()
         self.linear = nn.ModuleList([nn.Linear(layers[i], layers[i + 1]) for i in range(len(layers) - 1)])
-        self.lambda1 = nn.Parameter(torch.tensor(0.1))
+        self.lambda1 = nn.Parameter(torch.tensor(1.0))
         self.lambda2 = nn.Parameter(torch.tensor(0.0))
         for i in range(len(layers) - 1):
             nn.init.xavier_normal_(self.linear[i].weight.data, gain=1.0)
