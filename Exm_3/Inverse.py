@@ -316,12 +316,12 @@ class Model:
 
         self.optimizer_LBGFS.step(self.LBGFS_loss)
         with torch.no_grad():
-            pred_ = self.train_U(self.txy).cpu().numpy()
-            exact_ = exact_u(self.txy).cpu().numpy()
+            pred_ = self.train_U(self.txyz).cpu().numpy()
+            exact_ = exact_u(self.txyz).cpu().numpy()
             error_ = np.linalg.norm(pred_ - exact_, 2) / np.linalg.norm(exact_, 2)
             print(Fore.GREEN + 'Tain_L2error:', '{0:.4e}'.format(error_) + Style.RESET_ALL)
-            pred = self.train_U(self.txy_test).cpu().numpy()
-            exact = self.txy_test_exact.cpu().numpy()
+            pred = self.train_U(self.txyz_test).cpu().numpy()
+            exact = self.txyz_test_exact.cpu().numpy()
             error = np.linalg.norm(pred - exact, 2) / np.linalg.norm(exact, 2)
             print(Fore.BLUE + 'Test_L2error:', '{0:.4e}'.format(error) + Style.RESET_ALL)
 
